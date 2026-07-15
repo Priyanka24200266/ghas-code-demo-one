@@ -25,20 +25,16 @@ const commandLimiter = rateLimit({
 /*
 FIX COMMAND INJECTION
 */
-app.get("/unsafe-demo", commandLimiter, (req, res) => {
-   const input = req.query.input;
-   if (!validateHost(input)) {
-      return res.status(400).send("Invalid host");
-   }
-
-   const pingArgs = process.platform === "win32" ? ["-n", "1", input] : ["-c", "1", input];
-   child_process.execFile("ping", pingArgs, (err, stdout) => {
-      if (err) {
-         return res.status(500).send("Ping failed");
-      }
-      return res.type("text/plain").send(stdout);
-   });
+app.get("/unsafe-demo", (req, res) => {
+const input = req.query.input;
+child_process.exec(
+"ping -c 1 " + input,
+(err, stdout) => {
+res.send(stdout);
+}
+);
 });
+
 /*
 FIX PATH TRAVERSAL
 */
