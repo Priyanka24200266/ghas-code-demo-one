@@ -1,0 +1,11 @@
+name: GH500 Config
+
+queries:
+  - uses: security-extended
+
+paths:
+  - .
+
+paths-ignore:
+  - node_modules
+  - test
