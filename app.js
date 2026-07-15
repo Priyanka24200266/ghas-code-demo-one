@@ -15,10 +15,17 @@ const readLimiter = rateLimit({
    standardHeaders: true,
    legacyHeaders: false,
 });
+
+const commandLimiter = rateLimit({
+   windowMs: 60 * 1000,
+   max: 5,
+   standardHeaders: true,
+   legacyHeaders: false,
+});
 /*
 FIX COMMAND INJECTION
 */
-app.get("/unsafe-demo", (req, res) => {
+app.get("/unsafe-demo", commandLimiter, (req, res) => {
    const input = req.query.input;
    if (!validateHost(input)) {
       return res.status(400).send("Invalid host");
@@ -50,7 +57,6 @@ app.get("/read", readLimiter, (req, res) => {
 FIX XSS
 */
 app.get("/hello", (req, res) => {
-   const name = typeof req.query.name === "string" ? req.query.name : "World";
-   return res.type("text/plain").send(`Hello ${name}`);
+   return res.type("text/plain").send("Hello");
 });
 app.listen(port);
